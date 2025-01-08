@@ -15,33 +15,37 @@ const UpperOperations = ({alltask, setAllTask}) => {
     status: false
   });
 
+  const [validated, setValidated] = useState(false);
+
   const handleit = (e) => {
-    const {name, value} = e.target;
-    setTaskInfo( prevTask => ({ ...prevTask, [name]: value,}));
-    console.log(taskinfo);
-  }
+    const { name, value } = e.target;
+    setTaskInfo(prevTask => ({ ...prevTask, [name]: value }));
+    setValidated(false); // Reset validation state when the user starts typing
+  };
+
 
   const createTask = (e) => {
     e.preventDefault();
-    if(!taskinfo.task || !taskinfo.task_date) {
-      alert('All fields are required')
+    if (!taskinfo.task || !taskinfo.task_date) {
+      setValidated(true);
       return;
     }
 
     TodoService.createTask(taskinfo)
-    .then((task) => {
-      alert("Task created successfully");
-      setAllTask( [ ...alltask, task.data ] );
-      setTaskInfo({
-        task: '',
-        task_date: '',
-        status: false
+      .then((task) => {
+        alert("Task created successfully");
+        setAllTask([ ...alltask, task.data ]);
+        setTaskInfo({
+          task: '',
+          task_date: '',
+          status: false
+        });
+        setValidated(false); // Reset validation state on successful creation
       })
-    })
-    .catch((error) => {
-      console.error(error);
-    })
-  }
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   const deletePending = () => {
     TodoService.deletePending()
@@ -65,13 +69,13 @@ const UpperOperations = ({alltask, setAllTask}) => {
 
   const deleteAll = () => {
     TodoService.deleteAll()
-    .then(() => {
-      setAllTask( prevTask => {} );
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-  }
+      .then(() => {
+        setAllTask([]);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   return (
     <Container className="mt-5 text-center p-3 background pt-5">
@@ -79,13 +83,31 @@ const UpperOperations = ({alltask, setAllTask}) => {
         <Col>
             <h1>ToDo App</h1>
             <hr/>
-            <Form>
+            <Form noValidate validated={validated} onSubmit={createTask}>
             <Row>
                 <Col xs="auto" md="5">
-                <Form.Control placeholder="Enter task name" onChange={handleit} name="task" value={taskinfo.task} />
+                <Form.Control
+                  placeholder="Enter task name"
+                  onChange={handleit}
+                  name="task"
+                  value={taskinfo.task}
+                  isInvalid={validated && !taskinfo.task}
+                />
+                <Form.Control.Feedback type="invalid">
+                  Task name is required.
+                </Form.Control.Feedback>
                 </Col>
                 <Col xs="auto" md="5">
-                <Form.Control type="date" onChange={handleit} name="task_date" value={taskinfo.task_date} />
+                <Form.Control
+                  type="date"
+                  onChange={handleit}
+                  name="task_date"
+                  value={taskinfo.task_date}
+                  isInvalid={validated && !taskinfo.task_date}
+                />
+                <Form.Control.Feedback type="invalid">
+                  Task date is required.
+                </Form.Control.Feedback>
                 </Col>
                 <Col xs="auto" md="2">
                 <Button type="submit" className="btn btn-success mx-auto" onClick={(e) => createTask(e)}>
@@ -102,7 +124,7 @@ const UpperOperations = ({alltask, setAllTask}) => {
 
             <Row className = "mt-4 justify-content-center">
                 <Form.Group as={Col} xs="3">
-                <Button type="submit" className="btn btn-warning mx-auto" onClick={() => deletePending()}>
+                <Button type="button" className="btn btn-warning mx-auto" onClick={() => deletePending()}>
                     <div className="d-flex align-items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
                     <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
@@ -114,7 +136,7 @@ const UpperOperations = ({alltask, setAllTask}) => {
                 </Form.Group>
 
                 <Form.Group as={Col} xs="3">
-                <Button type="submit" className="btn btn-warning mx-auto" onClick={() => deleteCompleted()}>
+                <Button type="button" className="btn btn-warning mx-auto" onClick={() => deleteCompleted()}>
                     <div className="d-flex align-items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
                     <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
@@ -126,7 +148,7 @@ const UpperOperations = ({alltask, setAllTask}) => {
                 </Form.Group>
 
                 <Form.Group as={Col} xs="3">
-                <Button type="submit" className="btn btn-warning mx-auto" onClick={() => deleteAll()}>
+                <Button type="button" className="btn btn-warning mx-auto" onClick={() => deleteAll()}>
                     <div className="d-flex align-items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
                     <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>

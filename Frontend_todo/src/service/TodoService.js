@@ -1,9 +1,9 @@
 import axios from "axios";
 
 
-const APP_URL = "http://localhost:8060/api/v1/todo";
-const APP_URL_Pending = "http://localhost:8060/api/v1/todo/status_pending";
-const APP_URL_Completed = "http://localhost:8060/api/v1/todo/status_complete";
+const APP_URL = "http://localhost:8059/api/v1/todo";
+const APP_URL_Pending = "http://localhost:8059/api/v1/todo/status_pending";
+const APP_URL_Completed = "http://localhost:8059/api/v1/todo/status_complete";
 
 class TodoService {
 

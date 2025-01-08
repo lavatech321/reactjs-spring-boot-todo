@@ -8,12 +8,19 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "todo_app")
 public class ToDoModel {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @Column(nullable = false)  // Set task as NOT NULL
     private String task;
+
+    @Column(nullable = false)  // Set task as NOT NULL
     private LocalDate task_date;
-    private Boolean status;
+
+    @Column(nullable = false)
+    private Boolean status = false; // Default value set to false
 
     public ToDoModel(long id, String task, LocalDate task_date, Boolean status) {
         this.id = id;
